@@ -1,0 +1,16 @@
+{
+  "name": "alex-robert/loggr",
+  "version": "0.0.0",
+  "description": "PHP Logger, Logging is fun \o/",
+  "keywords": ["php", "log"],
+  "type": "library",
+  "authors": [
+    {
+      "name": "Alex Robert",
+      "email": "alex.robert@live.fr"
+    }
+  ],
+  "require": {
+    "php": ">=5.4"
+  }
+}
