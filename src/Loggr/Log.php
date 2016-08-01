@@ -19,7 +19,7 @@ Class Log {
      * @param $max_level
      */
     static public function set_max_level($max_level){
-        self::$_max_level = $max_level;
+        Level::$_max_level = $max_level;
     }
 
 
@@ -28,7 +28,7 @@ Class Log {
      * @param array $context
      */
     static public function debug($message, $context = null){
-        self::write(self::DEBUG, $message, $context);
+        Level::write(Level::DEBUG, $message, $context);
     }
 
 
@@ -37,7 +37,7 @@ Class Log {
      * @param array $context
      */
     static public function info($message, $context = null){
-        self::write(self::INFO, $message, $context);
+        Level::write(Level::INFO, $message, $context);
     }
 
 
@@ -46,7 +46,7 @@ Class Log {
      * @param array $context
      */
     static public function notice($message, $context = null){
-        self::write(self::NOTICE, $message, $context);
+        Level::write(Level::NOTICE, $message, $context);
     }
 
 
@@ -55,7 +55,7 @@ Class Log {
      * @param array $context
      */
     static public function warning($message, $context = null){
-        self::write(self::WARNING, $message, $context);
+        Level::write(Level::WARNING, $message, $context);
     }
 
 
@@ -64,7 +64,7 @@ Class Log {
      * @param array $context
      */
     static public function error($message, $context = null){
-        self::write(self::ERROR, $message, $context);
+        Level::write(Level::ERROR, $message, $context);
     }
 
 
@@ -73,7 +73,7 @@ Class Log {
      * @param array $context
      */
     static public function critical($message, $context = null){
-        self::write(self::CRITICAL, $message, $context);
+        Level::write(Level::CRITICAL, $message, $context);
     }
 
 
@@ -82,7 +82,7 @@ Class Log {
      * @param array $context
      */
     static public function alert($message, $context = null){
-        self::write(self::ALERT, $message, $context);
+        Level::write(Level::ALERT, $message, $context);
     }
 
 
@@ -91,7 +91,7 @@ Class Log {
      * @param array $context
      */
     static public function emergency($message, $context = null){
-        self::write(self::EMERGENCY, $message, $context);
+        Level::write(Level::EMERGENCY, $message, $context);
     }
 
 
@@ -100,7 +100,7 @@ Class Log {
      * @param array $context
      */
     static public function time($message, $context = null){
-        self::write(self::TIME, $message, $context);
+        Level::write(Level::TIME, $message, $context);
     }
 
 
@@ -109,7 +109,7 @@ Class Log {
      * @param array $context
      */
     static public function memory($message, $context = null){
-        self::write(self::MEMORY, $message, $context);
+        Level::write(Level::MEMORY, $message, $context);
     }
 
 
@@ -119,8 +119,8 @@ Class Log {
      * @param mixed  $context
      */
     static public function write($level, $message, $context = null){
-        if($level <= self::$_max_level) {
-            self::_notify_loggers($level, $message, $context);
+        if($level <= Level::$_max_level) {
+            Level::_notify_loggers($level, $message, $context);
         }
     }
 
@@ -132,7 +132,7 @@ Class Log {
      */
     static public function add_logger($Logger){
         if(is_a($Logger, 'LoggrInterface')){
-            self::$_loggers[] = $Logger;
+            Level::$_loggers[] = $Logger;
         }
     }
 
@@ -143,9 +143,9 @@ Class Log {
      * @return Log
      */
     static public function remove_logger($class){
-        foreach(self::$_loggers as $index=>$o){
+        foreach(Level::$_loggers as $index=>$o){
             if(is_a($o, $class)){
-                unset(self::$_loggers[$index]);
+                unset(Level::$_loggers[$index]);
             }
         }
     }
@@ -157,7 +157,7 @@ Class Log {
      * @param $context
      */
     static private function _notify_loggers($level, $message, $context){
-        foreach(self::$_loggers as $o){
+        foreach(Level::$_loggers as $o){
             $o->log($level, $message, $context);
         }
     }

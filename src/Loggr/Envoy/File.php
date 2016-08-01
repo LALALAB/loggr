@@ -3,7 +3,7 @@
 namespace Loggr\Envoy;
 
 
-Class File extends AbstractLoggr implements LoggrInterface {
+Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
 
 
    protected $_files = [
@@ -101,11 +101,9 @@ Class File extends AbstractLoggr implements LoggrInterface {
 
 
    /**
-    * @param int    $level
-    * @param string $message
-    * @param mixed  $context
+    * @inheritdoc
     */
-   public function log($level, $message, $context) {
+   public function log($level, $message, array $context = []) {
       $files = [];
 
       foreach ($this->_files as $file_name => $opt) {
