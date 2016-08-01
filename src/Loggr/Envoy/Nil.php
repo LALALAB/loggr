@@ -1,6 +1,6 @@
 <?php
 
-namespace Loggr\Logger;
+namespace Loggr\Envoy;
 
 
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Loggr\Logger;
+namespace Loggr\Envoy;
 
 
 Class File extends AbstractLogger implements LoggrInterface {
@@ -129,6 +129,7 @@ Class File extends AbstractLogger implements LoggrInterface {
             fputs($files[$file_name], $this->_format($level, $message, $context));
          }
       }
+
       foreach ($files as $file) {
          fclose($files[$file_name]);
       }

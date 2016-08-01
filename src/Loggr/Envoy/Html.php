@@ -1,6 +1,6 @@
 <?php
 
-namespace Loggr;
+namespace Loggr\Envoy;
 
 
 class Html extends File{
