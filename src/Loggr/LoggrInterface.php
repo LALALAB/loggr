@@ -9,6 +9,19 @@ namespace Loggr;
  */
 interface LoggrInterface {
 
+
+    /**
+     * @return int
+     */
+    public function get_min_level();
+
+
+    /**
+     * @return int
+     */
+    public function get_max_level();
+
+
     /**
      * System is unusable.
      *
