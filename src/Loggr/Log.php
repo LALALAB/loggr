@@ -7,21 +7,7 @@ Class Log {
 
 
     static private $_loggrs  = [];
-
-
-    static private $_min_lvl       = Level::ALERT;
-
-
-    /**
-     * Define the maximum level for logging.
-     * All logs under this level will be ignored
-     *
-     * @param $min_lvl
-     */
-    static public function set_min_level($min_lvl){
-        self::$_min_lvl = $min_lvl;
-    }
-
+    
 
     /**
      * @param string $message
@@ -119,16 +105,13 @@ Class Log {
      * @param mixed  $context
      */
     static public function write($level, $message, $context = []){
-        if($level >= self::$_min_lvl) {
-            self::_notify_loggers($level, $message, $context);
-        }
+        self::_notify_loggers($level, $message, $context);
     }
 
 
     /**
-     * Add a Logger class
-     * @param LoggrInterface $Logger
-     * @return Log
+     * Add a Loggr class
+     * @param LoggrInterface $Loggr
      */
     static public function add_logger(\Loggr\LoggrInterface $Loggr){
         self::$_loggrs[] = $Loggr;
@@ -136,7 +119,7 @@ Class Log {
 
 
     /**
-     * Remove a Logger Class
+     * Remove a Loggr Class
      * @param string $class
      * @return Log
      */
@@ -154,9 +137,13 @@ Class Log {
      * @param $message
      * @param $context
      */
-    static private function _notify_loggers($level, $message, $context){
-        foreach(self::$_loggrs as $o){
-            $o->log($level, $message, $context);
+    static private function _notify_loggers($level, $message, $context = []){
+        foreach(self::$_loggrs as $Loggr){
+            if(     $level >= $Loggr->get_min_level()
+                 && $level <= $Loggr->get_max_level()) {
+                
+                $Loggr->log($level, $message, $context);
+            }
         }
     }
 
