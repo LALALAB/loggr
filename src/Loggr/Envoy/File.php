@@ -35,26 +35,27 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
 
    /**
     * Same as for log rotation, but based on file size instead of a time span.
+    * Chunk size is defined in Kb.
     *
     * @var int
     */
-   protected $_chunk = 2048;
+   protected $_chunk_size = 2048;
 
 
    /**
     * @var array
     */
    protected $_format = [
-      \Loggr\Level::TIME      => "[{{time}}] - [{{message}}] \n",
-      \Loggr\Level::MEMORY    => "[{{time}}] - [{{message}}] \n",
-      \Loggr\Level::DEBUG     => "[{{time}}] - {{message}} {{context}} \n",
-      \Loggr\Level::NOTICE    => "[{{time}}] - {{message}} \n",
-      \Loggr\Level::INFO      => "[{{time}}] [{{level}}] - {{message}} \n",
-      \Loggr\Level::WARNING   => "[{{time}}] [{{level}}] -  **{{message}}** \n",
-      \Loggr\Level::ERROR     => "[{{time}}] [{{level}}] -  **{{message}}**  {{context}} \n",
-      \Loggr\Level::ALERT     => "[{{time}}] [*{{level}}*] - {{message}}     {{context}} \n",
-      \Loggr\Level::CRITICAL  => "[{{time}}] [**{{level}}**] - {{message}}   {{context}} \n",
-      \Loggr\Level::EMERGENCY => "[{{time}}] [***{{level}}***] - {{message}} {{context}} \n",
+      \Loggr\Level::TIME      => "[{time}] - [{message}] \n",
+      \Loggr\Level::MEMORY    => "[{time}] - [{message}] \n",
+      \Loggr\Level::DEBUG     => "[{time}] - {message} {context} \n",
+      \Loggr\Level::NOTICE    => "[{time}] - {message} \n",
+      \Loggr\Level::INFO      => "[{time}] [{level}] - {message} \n",
+      \Loggr\Level::WARNING   => "[{time}] [{level}] -  **{message}** \n",
+      \Loggr\Level::ERROR     => "[{time}] [{level}] -  **{message}**  {context} \n",
+      \Loggr\Level::ALERT     => "[{time}] [*{level}*] - {message}     {context} \n",
+      \Loggr\Level::CRITICAL  => "[{time}] [**{level}**] - {message}   {context} \n",
+      \Loggr\Level::EMERGENCY => "[{time}] [***{level}***] - {message} {context} \n",
    ];
 
 
@@ -104,33 +105,22 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
     * @inheritdoc
     */
    public function log($level, $message, array $context = []) {
-      $files = [];
 
       foreach ($this->_files as $file_name => $opt) {
          if ($opt[$level]) {
 
             $file_path = realpath($this->_path) . '/' . $file_name . '.' . $this->_ext;
 
-            if (!$files[$file_name]) {
-               if (file_exists($file_path) && ($this->_check_rotation($file_path) || (filesize($file_path) > $this->_chunk * 1000)) ) {
-                  rename($file_path, str_replace($file_name . '.' . $this->_ext, $file_name . '_' . date('Ymdhi')  . '.' . $this->_ext, $file_path));
-               }
-
-               $handle = fopen($file_path, "a+");
-               if($handle === null){
-                  //Todo : exeption
-               }else{
-                  $files[$file_name] = $handle;
-               }
-
+            if (   file_exists($file_path)
+                && ($this->_do_time_rotation($file_path) || $this->_do_time_rotation($file_path)) ) {
+               rename($file_path, str_replace($file_name . '.' . $this->_ext, $file_name . '_' . date('Ymdhi')  . '.' . $this->_ext, $file_path));
             }
-            fputs($files[$file_name], $this->_format($level, $message, $context));
+
+            $flag = FILE_APPEND;
+            file_put_contents($file_path, $this->_format($level, $message, $context), $flag);
          }
       }
 
-      foreach ($files as $file) {
-         fclose($files[$file_name]);
-      }
    }
 
 
@@ -151,7 +141,7 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
 
          $log_message = $format;
          foreach($this->_options as $option => $value){
-            $log_message = str_replace('{{' . $option . '}}', $value, $log_message);
+            $log_message = str_replace('{' . $option . '}', $value, $log_message);
          }
          return $log_message;
       }
@@ -161,12 +151,13 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
 
 
    /**
-    * Check if the given file should be
+    * Check if the given file should be rotated based on a time span
     *
     * @param string $file_path
+    *
     * @return bool
     */
-   protected function _check_rotation($file_path) {
+   protected function _do_time_rotation($file_path) {
       if ($this->_rotation) {
          $file_time = filemtime($file_path);
          $curr_time = time();
@@ -185,5 +176,16 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
       return false;
    }
 
+
+   /**
+    * Check if the given file should be rotated based on it's size
+    *
+    * @param  string $file_path
+    *
+    * @return bool
+    */
+   protected function _do_size_rotation($file_path){
+      return (filesize($file_path) > $this->_chunk_size * 1000) ? true : false;
+   }
 
 }
