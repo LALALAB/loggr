@@ -48,13 +48,13 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
       \Loggr\Level::TIME      => "[{{time}}] - [{{message}}] \n",
       \Loggr\Level::MEMORY    => "[{{time}}] - [{{message}}] \n",
       \Loggr\Level::DEBUG     => "[{{time}}] - {{message}} {{context}} \n",
-      \Loggr\Level::NOTICE    => "[{{time}}] {{user}} : {{message}} \n",
-      \Loggr\Level::INFO      => "[{{time}}] [{{level}}] ({{user}}) -- {{message}} \n",
-      \Loggr\Level::WARNING   => "[{{time}}] **{{message}}** \n",
-      \Loggr\Level::ERROR     => "[{{time}}] [{{level}}] => {{message}} {{context}} \n",
-      \Loggr\Level::ALERT     => "[{{time}}] [*{{level}}*] => {{message}} \n",
-      \Loggr\Level::CRITICAL  => "[{{time}}] [**{{level}}**] => {{message}} \n",
-      \Loggr\Level::EMERGENCY => "[{{time}}] [***{{level}}***] => {{message}} \n",
+      \Loggr\Level::NOTICE    => "[{{time}}] - {{message}} \n",
+      \Loggr\Level::INFO      => "[{{time}}] [{{level}}] - {{message}} \n",
+      \Loggr\Level::WARNING   => "[{{time}}] [{{level}}] -  **{{message}}** \n",
+      \Loggr\Level::ERROR     => "[{{time}}] [{{level}}] -  **{{message}}**  {{context}} \n",
+      \Loggr\Level::ALERT     => "[{{time}}] [*{{level}}*] - {{message}}     {{context}} \n",
+      \Loggr\Level::CRITICAL  => "[{{time}}] [**{{level}}**] - {{message}}   {{context}} \n",
+      \Loggr\Level::EMERGENCY => "[{{time}}] [***{{level}}***] - {{message}} {{context}} \n",
    ];
 
 
@@ -144,10 +144,10 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
       $format = $this->_format[$level];
       if ($format) {
 
-         $this->_options['level']   = self::$_levels[$level];
+         $this->_options['level']   = \Loggr\Level::get_name($level);//Level to string
          $this->_options['time']    = date('Y-m-d h:i:s') . '.' . str_pad(array_pop(explode('.', microtime(true))), 6, 0, STR_PAD_LEFT);
          $this->_options['message'] = $message;
-         $this->_options['context'] = ($context ? "\n" . print_r($context, true) : "");
+         $this->_options['context'] = ($context ? "\n" . var_export($context, true) : "");
 
          $log_message = $format;
          foreach($this->_options as $option => $value){
