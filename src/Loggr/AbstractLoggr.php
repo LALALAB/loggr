@@ -5,7 +5,7 @@ namespace Loggr;
 /**
  * @author Alexandre Robert <alex.robert@live.fr>
  */
-abstract class AbstractLogger implements LoggrInterface{
+abstract class AbstractLoggr implements LoggrInterface{
 
 
    protected $_options = [

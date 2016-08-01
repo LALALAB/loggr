@@ -3,7 +3,7 @@
 namespace Loggr\Envoy;
 
 
-Class Mongo extends AbstractLogger implements LoggrInterface {
+Class Mongo extends AbstractLoggr implements LoggrInterface {
 
 
    static protected $_collections = [

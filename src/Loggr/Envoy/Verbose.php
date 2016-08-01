@@ -3,7 +3,7 @@
 namespace Loggr\Envoy;
 
 
-Class Verbose extends AbstractLogger implements LoggrInterface {
+Class Verbose extends AbstractLoggr implements LoggrInterface {
 
     /**
      * @inheritdoc

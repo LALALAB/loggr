@@ -3,7 +3,7 @@
 namespace Loggr\Envoy;
 
 
-Class File extends AbstractLogger implements LoggrInterface {
+Class File extends AbstractLoggr implements LoggrInterface {
 
 
    protected $_files = [

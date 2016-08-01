@@ -1,6 +1,6 @@
 # Loggr
 
-        
+        $Fl = new \Loggr\Envoy\File();
         $Fl->set_path('./tmp/logs/');
         
         //All logs below CRITICAL will be ignored
