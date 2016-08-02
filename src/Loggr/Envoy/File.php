@@ -145,7 +145,7 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
          }
          return $log_message;
       }
-      return null;
+      return $message;
    }
 
 
