@@ -38,6 +38,9 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
      */
     public function set_connection(\PDO $conn){
         $this->_connection = $conn;
+
+        //Throw exeption when INSERT fail (Logs should made the whole app fail. Lol.)
+        $this->_connection->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
         return $this->_is_connected();
     }
 
@@ -53,6 +56,14 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
 
 
     /**
+     * @return string
+     */
+    public function get_table_name(){
+        return $this->_table_name;
+    }
+
+
+    /**
      * @param string $hostname
      * @param string $username
      * @param string $password
@@ -60,7 +71,7 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
      *
      * @return bool
      */
-    public function connect($hostname, $username, $password, $database){
+    public function connect($hostname, $database, $username, $password = null){
         return $this->set_connection(
             new \PDO('mysql:host='.$hostname.';dbname='.$database, $username, $password)
         );
@@ -80,7 +91,7 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
      * @param string $level
      * @param string $context
      */
-    public function bind_column_names(/*$time, $message, $level, $context*/){
+    public function bind_column_names(/*$time, $level, $message, $context*/){
 
         $this->_column_names = [
             'time'    => null,
@@ -97,8 +108,8 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
 
             $this->_column_names = [
                'time'    => func_get_arg(0),
-               'message' => func_get_arg(1),
-               'level'   => func_get_arg(2),
+               'level'   => func_get_arg(1),
+               'message' => func_get_arg(2),
                'context' => func_get_arg(3),
             ];
         }
@@ -113,26 +124,26 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
         if($this->_table_name && $this->_is_connected()) {
 
             $values  = $columns = '';
-
-            foreach($this->_column_names as $column => $name){
-                if($name && in_array($column, ['time', 'message', 'level', 'context'])){
-                    $columns .= ' '  .$name . ',';
-                    $values  .= ' :' . $column . ',';
-                }
-            }
-
-            $query   = "INSERT INTO :table_name (substr($columns, 0, -1)) VALUE (substr($values, 0, -1))";
-
-            echo "$query \n";
-
-            $stmt = $this->_connection->prepare($query, [
-                'table_name' => $this->_table_name,
-                'level'      => \Loggr\Level::get_name($level),
+            $params = [
+                'level'      => $level,
                 'time'       => $this->_get_time(),
                 'message'    => $this->_format_message($message, $context),
                 'context'    => $this->_format_context($context),
-            ]);
-            //$stmt->execute();
+            ];
+
+            foreach($this->_column_names as $column => $name){
+                if($name && in_array($column, ['time', 'message', 'level', 'context'])){
+                    $columns .= '`'  . $name   . '`,';
+                    $values  .= ':' . $column . ',';
+                }else{
+                    unset($params[$column]);
+                }
+            }
+
+            $query   = "INSERT INTO  `{$this->_table_name}` (". substr($columns, 0, -1) .") VALUES (". substr($values, 0, -1) .")";
+
+            $stmt = $this->_connection->prepare($query);
+            $stmt->execute($params);
         }
 
     }
