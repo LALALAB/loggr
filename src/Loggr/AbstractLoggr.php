@@ -35,6 +35,12 @@ abstract class AbstractLoggr{
 
 
    /**
+    * @var bool
+    */
+   private $_context_as_json = false;
+
+
+   /**
     * if min_lvl is defined, then all logs below that level will be ignored
     *
     * @param $min_lvl
@@ -67,6 +73,17 @@ abstract class AbstractLoggr{
     */
    final public function get_max_level(){
       return $this->_max_level;
+   }
+
+
+   /**
+    * If set to true, context will be displayed as a JSON string.
+    * Will be a var_export if not (default)
+    *
+    * @param bool $context_as_json
+    */
+   final public function set_context_as_json($context_as_json){
+      $this->_context_as_json = $context_as_json;
    }
 
 
@@ -148,8 +165,61 @@ abstract class AbstractLoggr{
    }
 
 
+   /**
+    * Format current context as php var export or Json
+    */
+   protected function _format_context($context){
+      if($this->_context_as_json){
+         return json_encode($context);
+      }else{
+         return var_export($context, true);
+      }
+   }
 
-   private function _log($level, $message, array $context = []){
+
+   /**
+    * Interpolate $message variable between braces from context
+    *
+    * @param $message
+    * @param $context
+    *
+    * @return string
+    */
+   protected function _format_message($message, $context){
+
+      $replace = [];
+
+      foreach ($context as $key => $val) {
+         if (    !is_array($val)
+             && (!is_object($val) || method_exists($val, '__toString'))) {
+
+            $replace['{' . $key . '}'] = $val;
+         }
+      }
+
+      return strtr($message, $replace);
+   }
+
+
+   /**
+    * @param bool $micro
+    *
+    * @return \DateTime
+    */
+   protected function _get_time($micro = false){
+      $time = date('Y-m-d h:i:s');
+
+      if($micro){
+         $time .= '.' . str_pad(array_pop(explode('.', microtime(true))), 6, 0, STR_PAD_LEFT);
+      }
+
+      return $time;
+   }
+
+
+
+
+   protected function _log($level, $message, array $context = []){
       if($level >= $this->_min_level && $level <= $this->_max_level){
          $this->log($level, $message, $context);
       }

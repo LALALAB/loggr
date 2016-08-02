@@ -117,7 +117,7 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
             }
 
             $flag = FILE_APPEND;
-            file_put_contents($file_path, $this->_format($level, $message, $context), $flag);
+            file_put_contents($file_path, $this->_format_message($level, $message, $context), $flag);
          }
       }
 
@@ -130,16 +130,17 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
     * @param $context
     * @return mixed|null
     */
-   protected function _format($level, $message, $context) {
+   protected function _format_message($level, $message, $context) {
       $format = $this->_format[$level];
       if ($format) {
 
-         $this->_options['level']   = \Loggr\Level::get_name($level);//Level to string
-         $this->_options['time']    = date('Y-m-d h:i:s') . '.' . str_pad(array_pop(explode('.', microtime(true))), 6, 0, STR_PAD_LEFT);
-         $this->_options['message'] = $message;
-         $this->_options['context'] = ($context ? "\n" . var_export($context, true) : "");
+         $this->_options['level']   = \Loggr\Level::get_name($level);
+         $this->_options['time']    = $this->_get_time(true);
+         $this->_options['message'] = parent::_format_message($message, $context);
+         $this->_options['context'] = ($context ? "\n" . $this->_format_context($context) : "");
 
          $log_message = $format;
+
          foreach($this->_options as $option => $value){
             $log_message = str_replace('{' . $option . '}', $value, $log_message);
          }
