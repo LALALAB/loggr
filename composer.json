@@ -1,6 +1,6 @@
 {
   "name": "alex-robert/loggr",
-  "version": "1.1.0-stable",
+  "version": "1.2.0-stable",
   "description": "PHP Logger, PSR-3, what else ?",
   "keywords": ["php", "log", "PSR-3"],
   "type": "library",
@@ -11,6 +11,7 @@
     }
   ],
   "require": {
+    "atoum/atoum": "~2.8",
     "php": ">=5.4"
   },
   "autoload": {

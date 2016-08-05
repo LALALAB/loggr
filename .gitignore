@@ -1,4 +1,6 @@
 .DS_Store
 .idea/*
 todo.md
-/test
+/vendor
+/tests/console.php
+/tests/file.php

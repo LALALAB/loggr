@@ -3,8 +3,9 @@
 namespace Loggr\Envoy;
 
 
-Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
 
+Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
+   use \Loggr\FormatableTrait;
 
    protected $_files = [
       'all'     => [ \Loggr\Level::TIME => false, \Loggr\Level::MEMORY => false, \Loggr\Level::DEBUG => false, \Loggr\Level::INFO => true,  \Loggr\Level::NOTICE => true,  \Loggr\Level::WARNING => true,  \Loggr\Level::ERROR => true,   \Loggr\Level::CRITICAL => true,  \Loggr\Level::ALERT => true,  \Loggr\Level::EMERGENCY => true,],
@@ -42,9 +43,7 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
    protected $_chunk_size = 2048;
 
 
-   /**
-    * @var array
-    */
+
    protected $_format = [
       \Loggr\Level::TIME      => "[{time}] - [{message}] \n",
       \Loggr\Level::MEMORY    => "[{time}] - [{message}] \n",
@@ -122,33 +121,6 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
       }
 
    }
-
-
-   /**
-    * @param $level
-    * @param $message
-    * @param $context
-    * @return mixed|null
-    */
-   protected function _format_message($level, $message, $context) {
-      $format = $this->_format[$level];
-      if ($format) {
-
-         $this->_options['level']   = \Loggr\Level::get_name($level);
-         $this->_options['time']    = $this->_get_time(true);
-         $this->_options['message'] = parent::_format_message($message, $context);
-         $this->_options['context'] = ($context ? "\n" . $this->_format_context($context) : "");
-
-         $log_message = $format;
-
-         foreach($this->_options as $option => $value){
-            $log_message = str_replace('{' . $option . '}', $value, $log_message);
-         }
-         return $log_message;
-      }
-      return $message;
-   }
-
 
 
    /**
