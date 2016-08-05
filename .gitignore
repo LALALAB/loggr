@@ -2,3 +2,5 @@
 .idea/*
 todo.md
 /vendor
+/tests/console.php
+/tests/file.php
