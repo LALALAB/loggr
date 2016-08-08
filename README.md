@@ -5,13 +5,6 @@
         
         //All logs below CRITICAL will be ignored
         \Loggr\Log::set_max_level(\Loggr\Level::CRITICAL);
-        /*
-         * ? : rename max to min ?
-         * ? : add a min level ?
-         * ? : set the levels on the loggers classes to have more flexibility ?
-         *   > Debug/infos logs in files
-         *   > Critical logs could use a "push" loggers (like email, sms...)
-         */
         
         
         \Loggr\Log::add_logger($Fl);
