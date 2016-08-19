@@ -1,6 +1,6 @@
 {
   "name": "alex-robert/loggr",
-  "version": "1.2.0-stable",
+  "version": "1.2.1-stable",
   "description": "PHP Logger, PSR-3, what else ?",
   "keywords": ["php", "log", "PSR-3"],
   "type": "library",
