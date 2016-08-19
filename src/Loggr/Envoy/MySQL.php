@@ -85,33 +85,33 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
      * For exemple, if context is set to nul, insert query will only insert message and level
      *
      * @param array $binded_names with key : ['time' => '***', 'message' => '***', 'level' => '***', 'context' => '***']
-     * --------- OR ---------------
-     * @param string $time
-     * @param string $message
-     * @param string $level
-     * @param string $context
      */
-    public function bind_column_names(/*$time, $level, $message, $context*/){
+    public function bind_column_names($array){
+        foreach ($array as  $name => $column){
+            if($name){
+                $this->_column_names[$name] = $column;
+            }else{
+                $this->remove_column($name);
+            }
+        }
+    }
 
-        $this->_column_names = [
-            'time'    => null,
-            'message' => null,
-            'level'   => null,
-            'context' => null,
-        ];
 
-        if(is_array(func_get_arg(0))){
+    /**
+     * Bind a new column.
+     * This column will be filled by the equivalent context key.
+     *
+     * @param  string $name
+     * @param  string $column  SQL column name. If not given, then same as name
+     */
+    public function bind_column($name, $column = null){
+        $this->_column_names[$name] = $column ? $column : $name;
+    }
 
-            $this->_column_names = func_get_arg(0);
 
-        }else if(func_num_args() > 1){
-
-            $this->_column_names = [
-               'time'    => func_get_arg(0),
-               'level'   => func_get_arg(1),
-               'message' => func_get_arg(2),
-               'context' => func_get_arg(3),
-            ];
+    public function remove_column($name){
+        if(key_exists($name, $this->_column_names)){
+            $this->_column_names[$name] = null;
         }
     }
 
@@ -124,6 +124,7 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
         if($this->_table_name && $this->_is_connected()) {
 
             $values  = $columns = '';
+
             $params = [
                 'level'      => $level,
                 'time'       => $this->_get_time(),
@@ -131,21 +132,26 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
                 'context'    => $this->_format_context($context),
             ];
 
-            foreach($this->_column_names as $column => $name){
-                if($name && in_array($column, ['time', 'message', 'level', 'context'])){
-                    $columns .= '`'  . $name   . '`,';
-                    $values  .= ':' . $column . ',';
+            foreach($this->_column_names as $name => $column ){
+                if($column !== null){
+                    $columns .= '`'  . $column   . '`,';
+                    $values  .= ':' .  $name . ',';
+
+                    if(!isset($params[$name])){
+                        $params[$name] =  isset($context[$name]) ? $context[$name] : null;
+                    }
+
                 }else{
-                    unset($params[$column]);
+                    unset($params[$name]);
                 }
             }
 
-            $query   = "INSERT INTO  `{$this->_table_name}` (". substr($columns, 0, -1) .") VALUES (". substr($values, 0, -1) .")";
+            $query    = "INSERT INTO  `{$this->_table_name}` (". substr($columns, 0, -1) .") ";
+            $query   .=  " VALUES (". substr($values, 0, -1) .")";
 
             $stmt = $this->_connection->prepare($query);
             $stmt->execute($params);
         }
-
     }
 
 
