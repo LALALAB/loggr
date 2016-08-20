@@ -14,7 +14,7 @@ namespace Loggr\Envoy;
 class Nil extends AbstractEnvoy implements EnvoyInterface{
 
 
-    public function log($level, $message, array $context = []) {
+    public function _write($level, $message, array $context = []) {
         //Nil does nothing.
     }
 
