@@ -68,6 +68,40 @@ Their is no autloader, neither classmap file providen.
 Quick Manual
 ------------
 
+### File Formatter exemple
+
+    $Fl = new \Loggr\Envoy\File();
+    $Fl->set_path('/tmp/logs/');
+    $Fl->get_formatter()
+            ->set_format(\Loggr\Level::DEBUG, "{level} ::: {time} - {message} {context} \n")
+            ->set_format('default', "{level} :: {time} - {message} \n")
+            ->set_time_format('Y-m-d h:i:s')
+            ->set_microtime(true)
+            ->set_context_format('json');
+    
+    $Fl->set_min_level(\Loggr\Level::INFO);
+    $Fl->info('Hello {to}', ['to'=>'World']);
+    $Fl->debug('Not logged, below min level');
+    
+    
+### MySQL Loggr exemple
+
+    $Ml = new \Loggr\Envoy\MySQL();
+    $Ml->set_connection(new PDO('mysql:host=localhost;dbname=test', 'logger'));
+    $Ml->set_table_name('logs');
+    
+    //Bind context and basics ('message', 'level', 'context', 'time') keys to DB columns
+    $Ml->bind_column_names([
+        'time'    => 'created_at',
+        'level'   => 'lvl',
+        'foo'     => 'bar'
+    ]);
+    
+    //Will bind "description" key (in the context) to description column
+    $Ml->bind_column('description');
+    
+    $Ml->debug('Test', ['description' => 'This is a test.', 'bar' => 'Just inside the context', 'foo' => 'Goes in bar column']);
+
 
 
 Licence
