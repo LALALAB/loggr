@@ -15,8 +15,8 @@ trait FormatableTrait{
 
         $message = parent::_format_message($message, $context);
 
-        if ($this->_format[$level]) {
-            $format = $this->_format[$level];
+        if ($this->_formats[$level]) {
+            $format = $this->_formats[$level];
             $log    = parent::_format_message($format, [
                 'level'   => \Loggr\Level::get_name($level),
                 'time'    => parent::_get_time(true),

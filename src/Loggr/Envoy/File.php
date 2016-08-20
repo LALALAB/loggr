@@ -2,16 +2,16 @@
 
 namespace Loggr\Envoy;
 
+use \Loggr\Level;
 
+Class File extends AbstractEnvoy implements EnvoyInterface {
 
-Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
-   use \Loggr\FormatableTrait;
 
    protected $_files = [
-      'all'     => [ \Loggr\Level::TIME => false, \Loggr\Level::MEMORY => false, \Loggr\Level::DEBUG => false, \Loggr\Level::INFO => true,  \Loggr\Level::NOTICE => true,  \Loggr\Level::WARNING => true,  \Loggr\Level::ERROR => true,   \Loggr\Level::CRITICAL => true,  \Loggr\Level::ALERT => true,  \Loggr\Level::EMERGENCY => true,],
-      'debug'   => [ \Loggr\Level::TIME => false, \Loggr\Level::MEMORY => false, \Loggr\Level::DEBUG => true,  \Loggr\Level::INFO => false, \Loggr\Level::NOTICE => false, \Loggr\Level::WARNING => false, \Loggr\Level::ERROR => false,  \Loggr\Level::CRITICAL => false, \Loggr\Level::ALERT => false, \Loggr\Level::EMERGENCY => false,],
-      'error'   => [ \Loggr\Level::TIME => false, \Loggr\Level::MEMORY => false, \Loggr\Level::DEBUG => false, \Loggr\Level::INFO => false, \Loggr\Level::NOTICE => false, \Loggr\Level::WARNING => false, \Loggr\Level::ERROR => true,   \Loggr\Level::CRITICAL => true,  \Loggr\Level::ALERT => true,  \Loggr\Level::EMERGENCY => true,],
-      'perf'    => [ \Loggr\Level::TIME => true,  \Loggr\Level::MEMORY => true,  \Loggr\Level::DEBUG => false, \Loggr\Level::INFO => false, \Loggr\Level::NOTICE => false, \Loggr\Level::WARNING => false, \Loggr\Level::ERROR => false,  \Loggr\Level::CRITICAL => false, \Loggr\Level::ALERT => false, \Loggr\Level::EMERGENCY => false,],
+      'all'     => [ Level::TIME => false, Level::MEMORY => false, Level::DEBUG => true,  Level::INFO => true,  Level::NOTICE => true,  Level::WARNING => true,  Level::ERROR => true,   Level::CRITICAL => true,  Level::ALERT => true,  Level::EMERGENCY => true,],
+      'debug'   => [ Level::TIME => true,  Level::MEMORY => true,  Level::DEBUG => true,  Level::INFO => false, Level::NOTICE => false, Level::WARNING => false, Level::ERROR => false,  Level::CRITICAL => false, Level::ALERT => false, Level::EMERGENCY => false,],
+      'error'   => [ Level::TIME => false, Level::MEMORY => false, Level::DEBUG => false, Level::INFO => false, Level::NOTICE => false, Level::WARNING => false, Level::ERROR => true,   Level::CRITICAL => true,  Level::ALERT => true,  Level::EMERGENCY => true,],
+      'perf'    => [ Level::TIME => true,  Level::MEMORY => true,  Level::DEBUG => false, Level::INFO => false, Level::NOTICE => false, Level::WARNING => false, Level::ERROR => false,  Level::CRITICAL => false, Level::ALERT => false, Level::EMERGENCY => false,],
    ];
 
    protected $_ext = 'log';
@@ -42,20 +42,6 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
     */
    protected $_chunk_size = 2048;
 
-
-
-   protected $_format = [
-      \Loggr\Level::TIME      => "[{time}] - [{message}] \n",
-      \Loggr\Level::MEMORY    => "[{time}] - [{message}] \n",
-      \Loggr\Level::DEBUG     => "[{time}] - {message} {context} \n",
-      \Loggr\Level::NOTICE    => "[{time}] - {message} \n",
-      \Loggr\Level::INFO      => "[{time}] [{level}] - {message} \n",
-      \Loggr\Level::WARNING   => "[{time}] [{level}] -  **{message}** \n",
-      \Loggr\Level::ERROR     => "[{time}] [{level}] -  **{message}**  {context} \n",
-      \Loggr\Level::ALERT     => "[{time}] [*{level}*] - {message}     {context} \n",
-      \Loggr\Level::CRITICAL  => "[{time}] [**{level}**] - {message}   {context} \n",
-      \Loggr\Level::EMERGENCY => "[{time}] [***{level}***] - {message} {context} \n",
-   ];
 
 
    /**
@@ -91,20 +77,11 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
    }
 
 
-   /**
-    * @param $level
-    * @param $template
-    */
-   public function set_format($level, $template){
-      $this->_format[$level] = $template;
-   }
-
 
    /**
     * @inheritdoc
     */
-   public function log($level, $message, array $context = []) {
-
+   protected function _write($level, $message, array $context = []) {
       foreach ($this->_files as $file_name => $opt) {
          if ($opt[$level]) {
 
@@ -115,8 +92,10 @@ Class File extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
                rename($file_path, str_replace($file_name . '.' . $this->_ext, $file_name . '_' . date('Ymdhi')  . '.' . $this->_ext, $file_path));
             }
 
-            $flag = FILE_APPEND;
-            file_put_contents($file_path, $this->_format_message($level, $message, $context), $flag);
+            file_put_contents(   $file_path,
+                                 $this->_Formatter->format($level, $message, $context),
+                                 FILE_APPEND
+            );
          }
       }
 

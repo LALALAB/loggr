@@ -113,7 +113,7 @@ Class Log {
      * Add a Loggr class
      * @param LoggrInterface $Loggr
      */
-    static public function add_logger(\Loggr\LoggrInterface $Loggr){
+    static public function add_logger(\Loggr\EnvoyInterface $Loggr){
         self::$_loggrs[] = $Loggr;
     }
 

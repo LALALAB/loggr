@@ -6,7 +6,7 @@ namespace Loggr\Envoy;
  * Class MySQL
  * @package Loggr\Envoy
  */
-class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
+class MySQL extends AbstractEnvoy implements EnvoyInterface {
 
 
     /**
@@ -109,6 +109,11 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
     }
 
 
+    /**
+     * remove a binded column
+     *
+     * @param $name
+     */
     public function remove_column($name){
         if(key_exists($name, $this->_column_names)){
             $this->_column_names[$name] = null;
@@ -119,7 +124,8 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
     /**
      * @inheritdoc
      */
-    public function log($level, $message, array $context = []) {
+    protected function _write($level, $message, array $context = []) {
+
 
         if($this->_table_name && $this->_is_connected()) {
 
@@ -127,9 +133,9 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
 
             $params = [
                 'level'      => $level,
-                'time'       => $this->_get_time(),
-                'message'    => $this->_format_message($message, $context),
-                'context'    => $this->_format_context($context),
+                'time'       => $this->_Formatter->time()->format(),
+                'message'    => $this->_Formatter->interpolate($message, $context),
+                'context'    => $this->_Formatter->context()->format($context),
             ];
 
             foreach($this->_column_names as $name => $column ){
@@ -138,7 +144,8 @@ class MySQL extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface {
                     $values  .= ':' .  $name . ',';
 
                     if(!isset($params[$name])){
-                        $params[$name] =  isset($context[$name]) ? $context[$name] : null;
+                        $params[$name] =  isset($context[$name]) ? $this->_Formatter->var_export($context[$name])
+                                                                 : null;
                     }
 
                 }else{
