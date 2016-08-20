@@ -1,11 +1,13 @@
 <?php
 
-namespace Loggr;
+namespace Loggr\Envoy;
+
+use \Loggr\Level;
 
 /**
  * @author Alexandre Robert <alex.robert@live.fr>
  */
-abstract class AbstractLoggr{
+abstract class AbstractEnvoy{
 
 
    /**
@@ -18,6 +20,12 @@ abstract class AbstractLoggr{
       //'instance'     => 'lipsum', ...
       //'whatever_var' => 'wahtever'
    ];
+
+
+   /**
+    * @var \Loggr\Formatter\AbstractFormatter;
+    */
+   protected $_Formatter = null;
 
 
    /**
@@ -35,9 +43,10 @@ abstract class AbstractLoggr{
 
 
    /**
-    * @var bool
+    * @var string
     */
-   private $_context_as_json = false;
+   private $_name = '';
+   
 
 
    /**
@@ -88,6 +97,29 @@ abstract class AbstractLoggr{
 
 
    /**
+    *
+    * @return \Loggr\Formatter\FormatterInterface
+    */
+   public function get_formatter(){
+      if(   $this->_Formatter === null
+         && $class = $this->_which_formatter()){
+
+         $this->_Formatter = new $class;
+      }
+      return $this->_Formatter;
+   }
+
+
+   /**
+    * @param \Loggr\Formatter\FormatterInterface $Formatter
+    */
+   public function set_formatter(\Loggr\Formatter\FormatterInterface $Formatter ){
+
+      $this->_Formatter = $Formatter;
+   }
+
+
+   /**
     * Options used to format logs (user name, instance,
     *
     * @param $key
@@ -98,14 +130,22 @@ abstract class AbstractLoggr{
    }
 
 
-   final public function __construct() {}
+   /**
+    * AbstractEnvoy constructor.
+    *
+    * @param $name Channel name
+    */
+   final public function __construct($name) {
+      //Setup the base formatter for this logger, in case no other in settup afterward.
+      $this->get_formatter();
+   }
 
 
    /**
     * @inheritdoc
     */
    final public function debug($message, array $context  = []){
-      $this->_log(Level::DEBUG, $message, $context);
+      $this->_handle_write(Level::DEBUG, $message, $context);
    }
 
 
@@ -113,7 +153,7 @@ abstract class AbstractLoggr{
     * @inheritdoc
     */
    final  public function info($message, array $context  = []){
-      $this->_log(Level::INFO, $message, $context);
+      $this->_handle_write(Level::INFO, $message, $context);
    }
 
 
@@ -121,7 +161,7 @@ abstract class AbstractLoggr{
     * @inheritdoc
     */
    final public function notice($message, array $context  = []){
-      $this->_log(Level::NOTICE, $message, $context);
+      $this->_handle_write(Level::NOTICE, $message, $context);
    }
 
 
@@ -129,7 +169,7 @@ abstract class AbstractLoggr{
     * @inheritdoc
     */
    final public function warning($message, array $context  = []){
-      $this->_log(Level::WARNING, $message, $context);
+      $this->_handle_write(Level::WARNING, $message, $context);
    }
 
 
@@ -137,7 +177,7 @@ abstract class AbstractLoggr{
     * @inheritdoc
     */
    final public function error($message, array $context  = []){
-      $this->_log(Level::ERROR, $message, $context);
+      $this->_handle_write(Level::ERROR, $message, $context);
    }
 
 
@@ -145,7 +185,7 @@ abstract class AbstractLoggr{
     * @inheritdoc
     */
    final public function critical($message, array $context  = []){
-      $this->_log(Level::CRITICAL, $message, $context);
+      $this->_handle_write(Level::CRITICAL, $message, $context);
    }
 
 
@@ -153,7 +193,7 @@ abstract class AbstractLoggr{
     * @inheritdoc
     */
    final public function alert($message, array $context  = []){
-      $this->_log(Level::ALERT, $message, $context);
+      $this->_handle_write(Level::ALERT, $message, $context);
    }
 
 
@@ -161,69 +201,54 @@ abstract class AbstractLoggr{
     * @inheritdoc
     */
    final public function emergency($message, array $context = []){
-      $this->_log(Level::EMERGENCY, $message, $context);
+      $this->_handle_write(Level::EMERGENCY, $message, $context);
    }
 
 
    /**
-    * Format current context as php var export or Json
+    * @inheritdoc
     */
-   protected function _format_context($context){
-      if($this->_context_as_json){
-         return json_encode($context);
-      }else{
-         return var_export($context, true);
+   final public function log($level, $message, array $context = []){
+      $this->_handle_write($level, $message, $context);
+   }
+
+
+   /**
+    * @param       $level
+    * @param       $message
+    * @param array $context
+    *
+    * @return mixed
+    */
+   abstract protected function _write($level, $message, array $context = []);
+
+
+   /**
+    * @param       $level
+    * @param       $message
+    * @param array $context
+    */
+   private function _handle_write($level, $message, array $context = []){
+      if($level >= $this->_min_level && $level <= $this->_max_level){
+         $this->_write($level, $message, $context);
       }
    }
 
 
    /**
-    * Interpolate $message variable between braces from context
-    *
-    * @param $message
-    * @param $context
-    *
     * @return string
     */
-   protected function _format_message($message, $context){
+   private function _which_formatter(){
+      $class = '\\' . str_replace('Envoy', 'Formatter', get_class($this));
 
-      $replace = [];
-
-      foreach ($context as $key => $val) {
-         if (    !is_array($val)
-             && (!is_object($val) || method_exists($val, '__toString'))) {
-
-            $replace['{' . $key . '}'] = $val;
-         }
+      if(class_exists($class) && isset(class_implements($class, true)['Loggr\Formatter\FormatterInterface']) ){
+         return $class;
       }
 
-      return strtr($message, $replace);
+      //Default message formating (context interpolation)
+      return '\\Loggr\\Formatter\\Message';
    }
 
-
-   /**
-    * @param bool $micro
-    *
-    * @return \DateTime
-    */
-   protected function _get_time($micro = false){
-      $time = date('Y-m-d h:i:s');
-
-      if($micro){
-         $time .= '.' . str_pad(array_pop(explode('.', microtime(true))), 6, 0, STR_PAD_LEFT);
-      }
-
-      return $time;
-   }
-
-
-
-
-   protected function _log($level, $message, array $context = []){
-      if($level >= $this->_min_level && $level <= $this->_max_level){
-         $this->log($level, $message, $context);
-      }
-   }
 
 
 }

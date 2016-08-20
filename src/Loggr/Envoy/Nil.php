@@ -11,7 +11,7 @@ namespace Loggr\Envoy;
  *
  * @package Loggr\Envoy
  */
-class Nil extends \Loggr\AbstractLoggr implements \Loggr\LoggrInterface{
+class Nil extends AbstractEnvoy implements EnvoyInterface{
 
 
     public function log($level, $message, array $context = []) {

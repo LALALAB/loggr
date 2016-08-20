@@ -1,25 +1,14 @@
 <?php
 
-namespace Loggr;
+namespace Loggr\Envoy;
 
 
 /**
  * Interface LoggrInterface
  * @package Loggr
  */
-interface LoggrInterface {
+interface EnvoyInterface {
 
-
-    /**
-     * @return int
-     */
-    public function get_min_level();
-
-
-    /**
-     * @return int
-     */
-    public function get_max_level();
 
 
     /**
@@ -127,9 +116,7 @@ interface LoggrInterface {
      * @param mixed  $level
      * @param string $message
      * @param array  $context
-     *
-     * @return null
      */
     public function log($level, $message, array $context = []);
-
+    
 }

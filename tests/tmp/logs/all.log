@@ -1,0 +1,12 @@
+DEBUG :::  - Hello World 
+{"big_blue_thing":"World"} 
+Info are forbiden 
+DEBUG :::  - I can still debug with log ><  
+DEBUG ::: 2016-08-20 03:43:56.005337 - Hello World 
+{"big_blue_thing":"World"} 
+Info are forbiden 
+DEBUG ::: 2016-08-20 03:43:56.005347 - I can still debug with log ><  
+DEBUG ::: 2016-08-20 03:44:21 - Hello World 
+{"big_blue_thing":"World"} 
+Info are forbiden 
+DEBUG ::: 2016-08-20 03:44:21 - I can still debug with log ><  
