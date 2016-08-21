@@ -19,27 +19,27 @@ Loggr is PSR-3 Loger implementation.
 Usage
 ------------
 
-        //Create and configure a file loggr
-        $Fl = new \Loggr\Envoy\File();
-        $Fl->set_path('./tmp/logs/');
-        
-        //Create a Nil loggr (that doesn nothing)
-        $Nl = new \Loggr\Envoy\Nil();
+    //Create and configure a file loggr
+    $Fl = new \Loggr\Envoy\File();
+    $Fl->set_path('./tmp/logs/');
+    
+    //Create a Nil loggr (that doesn nothing)
+    $Nl = new \Loggr\Envoy\Nil();
 
-        
-        //Register a Loggr  
-        \Loggr\Log::add_logger($Fl);
-        //Register as many Loggr as you need
-        \Loggr\Log::add_logger($Nl);
+    
+    //Register a Loggr  
+    \Loggr\Log::add_logger($Fl);
+    //Register as many Loggr as you need
+    \Loggr\Log::add_logger($Nl);
 
-        
-        \Loggr\Log::alert('This is going verryyyy badly...');
-        
-        
-        //Can use also directly the loggr :
-        $Fl->log(\Loggr\Level::INFO, 'Hi', ['con'=>'text']);
-        //Or :  
-        $Fl->info('Hi', ['con'=>'text']);
+    
+    \Loggr\Log::alert('This is going verryyyy badly...');
+    
+    
+    //Can use also directly the loggr :
+    $Fl->log(\Loggr\Level::INFO, 'Hi', ['con'=>'text']);
+    //Or :  
+    $Fl->info('Hi', ['con'=>'text']);
 
 Requirements
 ------------
@@ -54,8 +54,9 @@ Install
 ### Composer
 
     {
+        "minimum-stability": "dev",
         "require": {
-            "alex-robert/loggr": "~1"        
+            "alex-robert/loggr": "~2"        
         }
     }
 
