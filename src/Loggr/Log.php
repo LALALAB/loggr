@@ -6,7 +6,7 @@ namespace Loggr;
 Class Log {
 
 
-    static private $_loggrs  = [];
+    static private $_envoys  = [];
     
 
     /**
@@ -113,9 +113,18 @@ Class Log {
      * Add a Loggr class
      * @param LoggrInterface $Loggr
      */
-    static public function add_logger(\Loggr\EnvoyInterface $Loggr){
-        self::$_loggrs[] = $Loggr;
+    static public function add_envoy(Envoy\EnvoyInterface $Envoy, $stack_name){
+        self::$_envoys[] = $Envoy;
     }
+
+
+    /**
+     * @param Loggr $Loggr
+     */
+    static public function add_loggr(Loggr $Loggr){
+
+    }
+
 
 
     /**
@@ -124,9 +133,9 @@ Class Log {
      * @return Log
      */
     static public function remove_logger($class){
-        foreach(self::$_loggrs as $index=>$o){
+        foreach(self::$_envoys as $index=> $o){
             if(is_a($o, $class)){
-                unset(self::$_loggrs[$index]);
+                unset(self::$_envoys[$index]);
             }
         }
     }
@@ -138,7 +147,7 @@ Class Log {
      * @param $context
      */
     static private function _notify_loggers($level, $message, $context = []){
-        foreach(self::$_loggrs as $Loggr){
+        foreach(self::$_envoys as $Loggr){
             if(     $level >= $Loggr->get_min_level()
                  && $level <= $Loggr->get_max_level()) {
                 
