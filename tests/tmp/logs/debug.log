@@ -1,9 +1,0 @@
-DEBUG :::  - Hello World 
-{"big_blue_thing":"World"} 
-DEBUG :::  - I can still debug with log ><  
-DEBUG ::: 2016-08-20 03:43:56.005343 - Hello World 
-{"big_blue_thing":"World"} 
-DEBUG ::: 2016-08-20 03:43:56.005347 - I can still debug with log ><  
-DEBUG ::: 2016-08-20 03:44:21 - Hello World 
-{"big_blue_thing":"World"} 
-DEBUG ::: 2016-08-20 03:44:21 - I can still debug with log ><  

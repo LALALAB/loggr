@@ -1,8 +1,9 @@
 {
   "name": "alex-robert/loggr",
-  "version": "2.0.0-beta",
+  "version": "2.0.0-dev",
   "description": "PHP Logger, PSR-3, what else ?",
   "keywords": ["php", "log", "PSR-3"],
+  "license": "MIT",
   "type": "library",
 
   "authors": [
