@@ -2,12 +2,13 @@
 
 namespace Loggr\Envoy;
 
+use Loggr\AbstractHandler;
 use \Loggr\Level;
 
 /**
  * @author Alexandre Robert <alex.robert@live.fr>
  */
-abstract class AbstractEnvoy{
+abstract class AbstractEnvoy extends AbstractHandler{
 
 
    /**
@@ -40,13 +41,6 @@ abstract class AbstractEnvoy{
     * @var int
     */
    private $_max_level = 100;
-
-
-   /**
-    * @var string
-    */
-   private $_name = '';
-   
 
 
    /**
@@ -85,16 +79,6 @@ abstract class AbstractEnvoy{
    }
 
 
-   /**
-    * If set to true, context will be displayed as a JSON string.
-    * Will be a var_export if not (default)
-    *
-    * @param bool $context_as_json
-    */
-   final public function set_context_as_json($context_as_json){
-      $this->_context_as_json = $context_as_json;
-   }
-
 
    /**
     *
@@ -117,7 +101,6 @@ abstract class AbstractEnvoy{
     * @param \Loggr\Formatter\FormatterInterface $Formatter
     */
    public function set_formatter(\Loggr\Formatter\FormatterInterface $Formatter ){
-
       $this->_Formatter = $Formatter;
    }
 
@@ -136,9 +119,11 @@ abstract class AbstractEnvoy{
    /**
     * AbstractEnvoy constructor.
     *
-    * @param $name Channel name
+    * @param $name Envoy name
     */
    final public function __construct($name) {
+      parent::__construct($name);
+
       //Setup the base formatter for this logger, in case no other in settup afterward.
       $this->get_formatter();
    }
@@ -147,72 +132,10 @@ abstract class AbstractEnvoy{
    /**
     * @inheritdoc
     */
-   final public function debug($message, array $context  = []){
-      $this->_handle_write(Level::DEBUG, $message, $context);
-   }
-
-
-   /**
-    * @inheritdoc
-    */
-   final  public function info($message, array $context  = []){
-      $this->_handle_write(Level::INFO, $message, $context);
-   }
-
-
-   /**
-    * @inheritdoc
-    */
-   final public function notice($message, array $context  = []){
-      $this->_handle_write(Level::NOTICE, $message, $context);
-   }
-
-
-   /**
-    * @inheritdoc
-    */
-   final public function warning($message, array $context  = []){
-      $this->_handle_write(Level::WARNING, $message, $context);
-   }
-
-
-   /**
-    * @inheritdoc
-    */
-   final public function error($message, array $context  = []){
-      $this->_handle_write(Level::ERROR, $message, $context);
-   }
-
-
-   /**
-    * @inheritdoc
-    */
-   final public function critical($message, array $context  = []){
-      $this->_handle_write(Level::CRITICAL, $message, $context);
-   }
-
-
-   /**
-    * @inheritdoc
-    */
-   final public function alert($message, array $context  = []){
-      $this->_handle_write(Level::ALERT, $message, $context);
-   }
-
-
-   /**
-    * @inheritdoc
-    */
-   final public function emergency($message, array $context = []){
-      $this->_handle_write(Level::EMERGENCY, $message, $context);
-   }
-
-
-   /**
-    * @inheritdoc
-    */
-   final public function log($level, $message, array $context = []){
-      $this->_handle_write($level, $message, $context);
+   final protected function _handle($level, $message, array $context = [], array $channels = []){
+      if($level >= $this->_min_level && $level <= $this->_max_level){
+         $this->_write($level, $message, $context);
+      }
    }
 
 
@@ -225,17 +148,6 @@ abstract class AbstractEnvoy{
     */
    abstract protected function _write($level, $message, array $context = []);
 
-
-   /**
-    * @param       $level
-    * @param       $message
-    * @param array $context
-    */
-   private function _handle_write($level, $message, array $context = []){
-      if($level >= $this->_min_level && $level <= $this->_max_level){
-         $this->_write($level, $message, $context);
-      }
-   }
 
 
    /**

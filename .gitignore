@@ -3,3 +3,9 @@
 todo.md
 /vendor
 /tests/*
+/tests/file.php
+/tests/mysql.php
+/tests/loggr.php
+/tests/stack.php
+/tests/tmp/*
+!*.gitkeep
