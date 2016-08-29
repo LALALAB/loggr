@@ -5,5 +5,7 @@ todo.md
 /tests/console.php
 /tests/file.php
 /tests/mysql.php
+/tests/loggr.php.php
+/tests/stack.php.php
 /tests/tmp/*
 !*.gitkeep
