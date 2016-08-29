@@ -6,15 +6,25 @@ namespace Loggr;
 Class Log {
 
 
-    static private $_envoys  = [];
-    
+    static private $_envoys    = [];
 
-    /**
-     * @param string $message
-     * @param array $context
-     */
-    static public function debug($message, $context = []){
-        self::write(Level::DEBUG, $message, $context);
+
+    static private $_channels  = [];
+
+
+
+
+
+    static public function __callStatic($name, $arguments){
+
+        if(isset(self::$_channels[$name])){
+            return self::$_channels[$name];
+        }else if (isset(self::$_channels['default'])) {
+            return self::$_channels['default'];
+        }else{
+            //error
+        }
+
     }
 
 
@@ -22,8 +32,8 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function info($message, $context = []){
-        self::write(Level::INFO, $message, $context);
+    static public function debug($message, $context = [], $channels = []){
+        self::write(Level::DEBUG, $message, $context, $channels);
     }
 
 
@@ -31,8 +41,8 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function notice($message, $context = []){
-        self::write(Level::NOTICE, $message, $context);
+    static public function info($message, $context = [], $channels = []){
+        self::write(Level::INFO, $message, $context, $channels);
     }
 
 
@@ -40,8 +50,8 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function warning($message, $context = []){
-        self::write(Level::WARNING, $message, $context);
+    static public function notice($message, $context = [], $channels = []){
+        self::write(Level::NOTICE, $message, $context, $channels);
     }
 
 
@@ -49,8 +59,8 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function error($message, $context = []){
-        self::write(Level::ERROR, $message, $context);
+    static public function warning($message, $context = [], $channels = []){
+        self::write(Level::WARNING, $message, $context, $channels);
     }
 
 
@@ -58,8 +68,8 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function critical($message, $context = []){
-        self::write(Level::CRITICAL, $message, $context);
+    static public function error($message, $context = [], $channels = []){
+        self::write(Level::ERROR, $message, $context, $channels);
     }
 
 
@@ -67,8 +77,8 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function alert($message, $context = []){
-        self::write(Level::ALERT, $message, $context);
+    static public function critical($message, $context = [], $channels = []){
+        self::write(Level::CRITICAL, $message, $context, $channels);
     }
 
 
@@ -76,8 +86,8 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function emergency($message, $context = []){
-        self::write(Level::EMERGENCY, $message, $context);
+    static public function alert($message, $context = [], $channels = []){
+        self::write(Level::ALERT, $message, $context, $channels);
     }
 
 
@@ -85,8 +95,8 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function time($message, $context = []){
-        self::write(Level::TIME, $message, $context);
+    static public function emergency($message, $context = [], $channels = []){
+        self::write(Level::EMERGENCY, $message, $context, $channels);
     }
 
 
@@ -94,8 +104,17 @@ Class Log {
      * @param string $message
      * @param array $context
      */
-    static public function memory($message, $context = []){
-        self::write(Level::MEMORY, $message, $context);
+    static public function time($message, $context = [], $channels = []){
+        self::write(Level::TIME, $message, $context, $channels);
+    }
+
+
+    /**
+     * @param string $message
+     * @param array $context
+     */
+    static public function memory($message, $context = [], $channels = []){
+        self::write(Level::MEMORY, $message, $context, $channels);
     }
 
 
@@ -104,8 +123,8 @@ Class Log {
      * @param string $message
      * @param mixed  $context
      */
-    static public function write($level, $message, $context = []){
-        self::_notify_loggers($level, $message, $context);
+    static public function write($level, $message, $context = [], $channels = []){
+        self::_notify($level, $message, $context, $channels);
     }
 
 
@@ -115,31 +134,21 @@ Class Log {
      * @param string $channel
      */
     static public function add_envoy(Envoy\EnvoyInterface $Envoy, $channel = 'default'){
-        self::$_envoys[] = $Envoy;
+        if( !isset(self::$_channels[$channel]) ){
+            self::$_channels[$channel] = new Channel($channel);
+        }
+
+        self::$_channels[$channel]->add($Envoy);
     }
 
 
     /**
      * @param Loggr $Loggr
      */
-    static public function add_loggr(Loggr $Loggr){
-
+    static public function add_channel(Channel $Channel){
+        self::$_channels[$Channel->get_name()] = $Channel;
     }
 
-
-
-    /**
-     * Remove a Loggr Class
-     * @param string $class
-     * @return Log
-     */
-    static public function remove_logger($class){
-        foreach(self::$_envoys as $index=> $o){
-            if(is_a($o, $class)){
-                unset(self::$_envoys[$index]);
-            }
-        }
-    }
 
 
     /**
@@ -147,14 +156,30 @@ Class Log {
      * @param $message
      * @param $context
      */
-    static private function _notify_loggers($level, $message, $context = []){
-        foreach(self::$_envoys as $Loggr){
-            if(     $level >= $Loggr->get_min_level()
-                 && $level <= $Loggr->get_max_level()) {
-                
-                $Loggr->log($level, $message, $context);
+    static private function _notify($level, $message, $context = [], $channels){
+        if(empty($channels)){
+            $channels = self::_get_implicit_channels();
+        }
+
+        foreach($channels as $name){
+            if(isset(self::$_channels[$name])){
+
+                self::$_channels[$name]->log($level, $message, $context);
             }
         }
+    }
+
+
+    static private function _get_implicit_channels(){
+
+        $channels = [];
+
+        foreach(self::$_channels as $Channel){
+            if(!$Channel->is_explicit()){
+                $channels[] = $Channel->get_name();
+            }
+        }
+        return $channels;
     }
 
 

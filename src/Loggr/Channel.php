@@ -8,6 +8,8 @@ class Channel extends AbstractHandler{
 
     private $_is_explicit = false;
 
+    private $_envoys      = [];
+
 
     public function set_explicit(){
         $this->_is_explicit = true;
@@ -37,8 +39,8 @@ class Channel extends AbstractHandler{
     /**
      * @param \Loggr\Envoy\EnvoyInterface $Envoy
      */
-    public function push(Envoy\EnvoyInterface $Envoy){
-
+    public function add(Envoy\EnvoyInterface $Envoy){
+        $this->_envoys[] = $Envoy;
     }
 
 
@@ -46,7 +48,11 @@ class Channel extends AbstractHandler{
      * @inheritdoc
      */
     final protected function _handle($level, $message, array $context = []){
-        // TODO: Implement _handle() method.
+
+        foreach($this->_envoys as $Envoy){
+            echo "Log to " . $Envoy->get_name() . " for channel ". $this->get_name() ." \n";
+            $Envoy->log($level, $message, $context);
+        }
     }
 
 
