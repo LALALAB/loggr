@@ -48,9 +48,7 @@ class Channel extends AbstractHandler{
      * @inheritdoc
      */
     final protected function _handle($level, $message, array $context = []){
-
         foreach($this->_envoys as $Envoy){
-            echo "Log to " . $Envoy->get_name() . " for channel ". $this->get_name() ." \n";
             $Envoy->log($level, $message, $context);
         }
     }

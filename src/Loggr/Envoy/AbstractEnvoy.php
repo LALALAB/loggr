@@ -129,7 +129,7 @@ abstract class AbstractEnvoy extends AbstractHandler{
    /**
     * @inheritdoc
     */
-   final protected function _handle($level, $message, array $context = []){
+   final protected function _handle($level, $message, array $context = [], array $channels = []){
       if($level >= $this->_min_level && $level <= $this->_max_level){
          $this->_write($level, $message, $context);
       }
