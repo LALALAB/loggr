@@ -8,10 +8,10 @@ Class File extends AbstractEnvoy implements EnvoyInterface {
 
 
    protected $_files = [
-      'all'     => [ Level::TIME => false, Level::MEMORY => false, Level::DEBUG => true,  Level::INFO => true,  Level::NOTICE => true,  Level::WARNING => true,  Level::ERROR => true,   Level::CRITICAL => true,  Level::ALERT => true,  Level::EMERGENCY => true,],
-      'debug'   => [ Level::TIME => true,  Level::MEMORY => true,  Level::DEBUG => true,  Level::INFO => false, Level::NOTICE => false, Level::WARNING => false, Level::ERROR => false,  Level::CRITICAL => false, Level::ALERT => false, Level::EMERGENCY => false,],
-      'error'   => [ Level::TIME => false, Level::MEMORY => false, Level::DEBUG => false, Level::INFO => false, Level::NOTICE => false, Level::WARNING => false, Level::ERROR => true,   Level::CRITICAL => true,  Level::ALERT => true,  Level::EMERGENCY => true,],
-      'perf'    => [ Level::TIME => true,  Level::MEMORY => true,  Level::DEBUG => false, Level::INFO => false, Level::NOTICE => false, Level::WARNING => false, Level::ERROR => false,  Level::CRITICAL => false, Level::ALERT => false, Level::EMERGENCY => false,],
+      'all'     => [ Level::DEBUG , Level::INFO ,      Level::NOTICE,   Level::WARNING ,  Level::ERROR ,   Level::CRITICAL ,  Level::ALERT ,  Level::EMERGENCY],
+      'debug'   => [ Level::TIME ,  Level::MEMORY ,    Level::DEBUG],
+      'error'   => [ Level::ERROR , Level::CRITICAL ,  Level::ALERT ,   Level::EMERGENCY],
+      'perf'    => [ Level::TIME ,  Level::MEMORY],
    ];
 
    protected $_ext = 'log';
@@ -64,7 +64,7 @@ Class File extends AbstractEnvoy implements EnvoyInterface {
     * @param       $name
     * @param array $levels
     */
-   public function set_file($name, array $levels){
+   public function add_file($name, array $levels){
       $this->_files[$name] = $levels;
    }
 
@@ -82,8 +82,11 @@ Class File extends AbstractEnvoy implements EnvoyInterface {
     * @inheritdoc
     */
    protected function _write($level, $message, array $context = []) {
+
       foreach ($this->_files as $file_name => $opt) {
-         if ($opt[$level]) {
+
+
+         if ( in_array($level, $opt) ) {
 
             $file_path = realpath($this->_path) . '/' . $file_name . '.' . $this->_ext;
 
