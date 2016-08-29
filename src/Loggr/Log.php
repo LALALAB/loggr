@@ -112,8 +112,9 @@ Class Log {
     /**
      * Add a Loggr class
      * @param LoggrInterface $Loggr
+     * @param string $channel
      */
-    static public function add_envoy(Envoy\EnvoyInterface $Envoy, $stack_name){
+    static public function add_envoy(Envoy\EnvoyInterface $Envoy, $channel = 'default'){
         self::$_envoys[] = $Envoy;
     }
 

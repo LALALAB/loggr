@@ -77,7 +77,6 @@ Class File extends AbstractEnvoy implements EnvoyInterface {
    }
 
 
-
    /**
     * @inheritdoc
     */
