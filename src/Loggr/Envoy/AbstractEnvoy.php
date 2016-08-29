@@ -16,7 +16,7 @@ abstract class AbstractEnvoy{
     * @var array
     */
    protected $_options = [
-      'user' => 'unknown user',
+      //'user'         => 'unknown user',
       //'instance'     => 'lipsum', ...
       //'whatever_var' => 'wahtever'
    ];
@@ -106,6 +106,9 @@ abstract class AbstractEnvoy{
 
          $this->_Formatter = new $class;
       }
+
+      $this->_Formatter->set_name($this->get_name());
+
       return $this->_Formatter;
    }
 

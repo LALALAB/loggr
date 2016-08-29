@@ -54,6 +54,7 @@ class Message extends AbstractFormatter implements FormatterInterface{
             'time'    => $this->time()->format($this->_time_format, $this->_microtime),
             'message' => $message,
             'context' => ($context ? "\n" . $this->context()->format($context, $this->_context_format) : ""),
+            'name'    => $this->get_name(),
         ]);
 
     }

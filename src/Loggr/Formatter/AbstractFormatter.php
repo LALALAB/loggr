@@ -28,6 +28,8 @@ abstract class AbstractFormatter{
     protected $_microtime      = false;
 
 
+    protected $_name           = '';
+
     /**
      * @param boolean $microtime
      * @return $this
@@ -59,6 +61,22 @@ abstract class AbstractFormatter{
         $this->_context_format = $context_format;
 
         return $this;
+    }
+
+
+    /**
+     * @param $name
+     */
+    final public function set_name($name){
+        $this->_name = $name;
+    }
+
+
+    /**
+     * @return string
+     */
+    final public function get_name(){
+        return $this->_name;
     }
 
 
