@@ -19,27 +19,29 @@ Loggr is PSR-3 Loger implementation.
 Usage
 ------------
 
-    //Create and configure a file loggr
-    $Fl = new \Loggr\Envoy\File();
-    $Fl->set_path('./tmp/logs/');
-    
-    //Create a Nil loggr (that doesn nothing)
-    $Nl = new \Loggr\Envoy\Nil();
+```php
+//Create and configure a file loggr
+$Fl = new \Loggr\Envoy\File();
+$Fl->set_path('./tmp/logs/');
 
-    
-    //Register a Loggr  
-    \Loggr\Log::add_logger($Fl);
-    //Register as many Loggr as you need
-    \Loggr\Log::add_logger($Nl);
+//Create a Nil loggr (that doesn nothing)
+$Nl = new \Loggr\Envoy\Nil();
 
-    
-    \Loggr\Log::alert('This is going verryyyy badly...');
-    
-    
-    //Can use also directly the loggr :
-    $Fl->log(\Loggr\Level::INFO, 'Hi', ['con'=>'text']);
-    //Or :  
-    $Fl->info('Hi', ['con'=>'text']);
+
+//Register a Loggr  
+\Loggr\Log::add_logger($Fl);
+//Register as many Loggr as you need
+\Loggr\Log::add_logger($Nl);
+
+
+\Loggr\Log::alert('This is going verryyyy badly...');
+
+
+//Can use also directly the loggr :
+$Fl->log(\Loggr\Level::INFO, 'Hi', ['con'=>'text']);
+//Or :  
+$Fl->info('Hi', ['con'=>'text']);
+```
 
 Requirements
 ------------
@@ -71,38 +73,47 @@ Quick Manual
 
 ### File Formatter exemple
 
-    $Fl = new \Loggr\Envoy\File();
-    $Fl->set_path('/tmp/logs/');
-    $Fl->get_formatter()
-            ->set_format(\Loggr\Level::DEBUG, "{level} ::: {time} - {message} {context} \n")
-            ->set_format('default', "{level} :: {time} - {message} \n")
-            ->set_time_format('Y-m-d h:i:s')
-            ->set_microtime(true)
-            ->set_context_format('json');
-    
-    $Fl->set_min_level(\Loggr\Level::INFO);
-    $Fl->info('Hello {to}', ['to'=>'World']);
-    $Fl->debug('Not logged, below min level');
-    
+```php
+$Fl = new \Loggr\Envoy\File();
+$Fl->set_path('/tmp/logs/');
+$Fl->get_formatter()
+        ->set_format(\Loggr\Level::DEBUG, "{level} ::: {time} - {message} {context} \n")
+        ->set_format('default', "{level} :: {time} - {message} \n")
+        ->set_time_format('Y-m-d h:i:s')
+        ->set_microtime(true)
+        ->set_context_format('json');
+
+$Fl->set_min_level(\Loggr\Level::INFO);
+$Fl->info('Hello {to}', ['to'=>'World']);
+$Fl->debug('Not logged, below min level');
+```    
     
 ### MySQL Loggr exemple
 
-    $Ml = new \Loggr\Envoy\MySQL();
-    $Ml->set_connection(new PDO('mysql:host=localhost;dbname=test', 'logger'));
-    $Ml->set_table_name('logs');
-    
-    //Bind context and basics ('message', 'level', 'context', 'time') keys to DB columns
-    $Ml->bind_column_names([
-        'time'    => 'created_at',
-        'level'   => 'lvl',
-        'foo'     => 'bar'
-    ]);
-    
-    //Will bind "description" key (in the context) to description column
-    $Ml->bind_column('description');
-    
-    $Ml->debug('Test', ['description' => 'This is a test.', 'bar' => 'Just inside the context', 'foo' => 'Goes in bar column']);
+```php
+$Ml = new \Loggr\Envoy\MySQL();
+$Ml->set_connection(new PDO('mysql:host=localhost;dbname=test', 'logger'));
+$Ml->set_table_name('logs');
 
+//Bind context and basics ('message', 'level', 'context', 'time') keys to DB columns
+$Ml->bind_column_names([
+    'time'    => 'created_at',
+    'level'   => 'lvl',
+    'foo'     => 'bar'
+]);
+
+//Will bind "description" key (in the context) to description column
+$Ml->bind_column('description');
+
+$Ml->debug('Test', ['description' => 'This is a test.', 'bar' => 'Just inside the context', 'foo' => 'Goes in bar column']);
+``` 
+
+
+### Roadmap
+
+- Mongo Logger
+- Redis Logger
+- Finish and commit unit tests
 
 
 Licence
