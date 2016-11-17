@@ -7,19 +7,21 @@ Loggr is PSR-3 Loger implementation.
 
 ### Features
 
-- Any number of Logers can be attached to the static log.
-- Loggr can be configured to log between min and max levels
+- Any number of handlers can log at once.
+- Different handlers can be configured to log between min and max levels
 - Messages are automaticly formated with the context
-- File Loggr : Write logs into files. Can be configured to auto-rotate files, logs different levels in differents files...
-- MySQL Loggr : Log into db. Fully configurable to map any existing table/columns. Use Only PDO connection
+- File Loggr : Write logs into files. Can be configured to auto-rotate files, logs different levels in differents files
+- MySQL Loggr : Log into db. Fully configurable to map any existing table. Require a PDO connection
 - HTML File Loggr : Just like the File, but add some HTML formating to review logs in a browser
 - Console Loggr : For command line logs, in color
 
 
 Usage
 ------------
+`
 
-```php
+#### Direct logging : 
+````php
 //Create and configure a file loggr
 $Fl = new \Loggr\Envoy\File();
 $Fl->set_path('./tmp/logs/');
@@ -27,21 +29,37 @@ $Fl->set_path('./tmp/logs/');
 //Create a Nil loggr (that doesn nothing)
 $Nl = new \Loggr\Envoy\Nil();
 
-
-//Register a Loggr  
-\Loggr\Log::add_logger($Fl);
-//Register as many Loggr as you need
-\Loggr\Log::add_logger($Nl);
-
-
-\Loggr\Log::alert('This is going verryyyy badly...');
-
-
-//Can use also directly the loggr :
+//log takes 3 args : level, message and context (optional)
 $Fl->log(\Loggr\Level::INFO, 'Hi', ['con'=>'text']);
-//Or :  
+
+//or you can use the shortcut methods to avoid passing the level
 $Fl->info('Hi', ['con'=>'text']);
+````
+
+
+#### Unsing the static class : 
+
+```php
+//Register a log handler (called an envoy here)  
+\Loggr\Log::add_envoy($Fl);
+//Register as many Loggr as you need
+\Loggr\Log::add_envoy($Nl);
+\Loggr\Log::add_envoy(new \Loggr\Envoy\MySQL());
+
+
+//This will be logged to a File and in Mysql
+\Loggr\Log::alert('This is going verryyyy badly...');
 ```
+
+#### Using the Loggr Class : 
+
+```php
+$Log = new \Loggr\Loggr();
+$Log->add_envoy(new \Loggr\Envoy\File());
+$Log->debug('Debug message', ['Some', 'Context']);
+
+```
+
 
 Requirements
 ------------
@@ -54,18 +72,18 @@ Install
 ------------
 
 ### Composer
-
-    {
-        "minimum-stability": "dev",
-        "require": {
-            "alex-robert/loggr": "~2"        
-        }
+```json
+{
+    "minimum-stability": "dev",
+    "require": {
+        "alex-robert/loggr": "~2"        
     }
+}
+```
 
 ### Manually
 
 Download sources and unzip in your project directory (but who does that, really ?!)  
-Their is no autloader, neither classmap file providen.
 
 
 Quick Manual
@@ -109,10 +127,78 @@ $Ml->debug('Test', ['description' => 'This is a test.', 'bar' => 'Just inside th
 ``` 
 
 
-### Roadmap
+### Channel Logging
+
+A channel is a stack of log handlers. It works with the same methods as a simple Loggr, but you can add multiple handlers to a channel, so you don't haveto create multiples instances of `Loggr`.  
+It can be usefull to create a channel for `api_calls`, another for `internals_errors` or even a `dev channel.  
+Channels works with static logging or with the Loggr class.  
+
+Instead of doing : 
+
+```php
+$ApiLog = new \Loggr\Loggr();
+//Setup envoys...
+$ApiLog->debug('Api call to ' . $url, $request_data);
+
+
+$DebugLog = new \Loggr\Loggr();
+//Setup envoys
+$DebugLog->debug('Debug message', ['Some', 'Context']);
+```
+
+Use channels : 
+
+```php
+
+$Fl1 = new \Loggr\Envoy\File();
+$Fl1->set_path(__DIR__ . '/tmp/logs/');
+
+$Fl2 = new \Loggr\Envoy\File();
+$Fl2->set_path(__DIR__ . '/tmp/logs/');
+
+$Fl3 = new \Loggr\Envoy\File();
+$Fl3->set_path(__DIR__ . '/tmp/logs/');
+
+$Fl4 = new \Loggr\Envoy\File();
+$Fl4->set_path(__DIR__ . '/tmp/logs/');
+
+//Constructor get a name for the channel
+$ApiChannel = new Channel('api_call');
+$ApiChannel->add($Fl2);
+$ApiChannel->add($Fl3);
+$ApiChannel->add($Fl4);
+
+$Log->add_channel($ApiChannel)
+
+$Log->add_envoy($Fl1);
+// > add $Fl1 to a default channel called 'implicit'
+
+$Log->debug('debug route', [$request_data], ['api_call']);
+// > log only to $Fl2, $Fl3 and $Fl4
+
+//Calling without specifiing a channel will log to every implicit channels : 
+$Log->debug('debug route', [$request_data]); 
+// > log in $Fl1,2,3 and 4.
+
+//Set the channel explicit, so it log only when explicitly called
+$ApiChannel->set_explicit();
+
+
+$Log->debug('Debug Message'); 
+// > log in only in $Fl1, as the default channel is not explicit
+
+$Log->debug('Debug Message', null, ['api_call']); 
+// > log only in $ApiChannel
+
+```
+
+
+Roadmap
+------------
 
 - Mongo Logger
 - Redis Logger
+- Maybe remove console Loggr that isn't really conveniant here ? 
 - Finish and commit unit tests
 
 
