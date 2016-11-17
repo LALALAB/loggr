@@ -2,7 +2,17 @@
 
 namespace Loggr;
 
-
+/**
+ * @description
+ * Logger class implemtation.
+ * An instance of this class can be passed to any library requiring a PSR-3 Logger.
+ * All Logg are handled by channel. By default, Envoy (classes who actually "writes" the logs) are placed
+ * in the 'implicit' channel.
+ *
+ *
+ * Class Loggr
+ * @package Loggr
+ */
 class Loggr extends AbstractHandler{
 
 
@@ -22,8 +32,8 @@ class Loggr extends AbstractHandler{
 
         if(isset($this->_channels[$name])){
             return $this->_channels[$name];
-        }else if (isset($this->_channels['default'])) {
-            return $this->_channels['default'];
+        }else if (isset($this->_channels['implicit'])) {
+            return $this->_channels['implicit'];
         }else{
             //error
         }
@@ -44,7 +54,7 @@ class Loggr extends AbstractHandler{
      * @param LoggrInterface $Loggr
      * @param string $channel
      */
-    public function add_envoy(Envoy\EnvoyInterface $Envoy, $channel = 'default'){
+    public function add_envoy(Envoy\EnvoyInterface $Envoy, $channel = 'implicit'){
         if( !isset($this->_channels[$channel]) ){
             $this->_channels[$channel] = new Channel($channel);
         }
