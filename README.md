@@ -18,7 +18,6 @@ Loggr is PSR-3 Loger implementation.
 
 Usage
 ------------
-`
 
 #### Direct logging : 
 ````php
@@ -35,7 +34,6 @@ $Fl->log(\Loggr\Level::INFO, 'Hi', ['con'=>'text']);
 //or you can use the shortcut methods to avoid passing the level
 $Fl->info('Hi', ['con'=>'text']);
 ````
-
 
 #### Unsing the static class : 
 
@@ -60,7 +58,6 @@ $Log->debug('Debug message', ['Some', 'Context']);
 
 ```
 
-
 Requirements
 ------------
 
@@ -84,7 +81,6 @@ Install
 ### Manually
 
 Download sources and unzip in your project directory (but who does that, really ?!)  
-
 
 Quick Manual
 ------------
@@ -125,7 +121,6 @@ $Ml->bind_column('description');
 
 $Ml->debug('Test', ['description' => 'This is a test.', 'bar' => 'Just inside the context', 'foo' => 'Goes in bar column']);
 ``` 
-
 
 ### Channel Logging
 
@@ -191,7 +186,6 @@ $Log->debug('Debug Message', null, ['api_call']);
 // > log only in $ApiChannel
 
 ```
-
 
 Roadmap
 ------------

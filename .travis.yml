@@ -5,4 +5,4 @@ php:
 install:
   - composer install
 script:
-  - ./vendor/bin/atoum -d ./tests/units
+# - ./vendor/bin/atoum -d ./tests/units
