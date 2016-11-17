@@ -2,8 +2,10 @@
 .idea/*
 todo.md
 /vendor
-/tests/console.php
+/tests/*
 /tests/file.php
 /tests/mysql.php
+/tests/loggr.php
+/tests/stack.php
 /tests/tmp/*
 !*.gitkeep
