@@ -90,7 +90,7 @@ Class File extends AbstractEnvoy implements EnvoyInterface {
             $file_path = realpath($this->_path) . '/' . $file_name . '.' . $this->_ext;
 
             if (   file_exists($file_path)
-                && ($this->_do_time_rotation($file_path) || $this->_do_time_rotation($file_path)) ) {
+                && ($this->_do_time_rotation($file_path) || $this->_do_size_rotation($file_path)) ) {
                rename($file_path, str_replace($file_name . '.' . $this->_ext, $file_name . '_' . date('Ymdhi')  . '.' . $this->_ext, $file_path));
             }
 
