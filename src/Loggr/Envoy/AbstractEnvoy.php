@@ -121,7 +121,7 @@ abstract class AbstractEnvoy extends AbstractHandler{
     *
     * @param $name Envoy name
     */
-   final public function __construct($name) {
+   final public function __construct($name = '') {
       parent::__construct($name);
 
       //Setup the base formatter for this logger, in case no other in settup afterward.
@@ -132,7 +132,7 @@ abstract class AbstractEnvoy extends AbstractHandler{
    /**
     * @inheritdoc
     */
-   final protected function _handle($level, $message, array $context = [], array $channels = []){
+   final protected function _handle($level, $message, $context = null, array $channels = []){
       if($level >= $this->_min_level && $level <= $this->_max_level){
          $this->_write($level, $message, $context);
       }
@@ -146,7 +146,7 @@ abstract class AbstractEnvoy extends AbstractHandler{
     *
     * @return mixed
     */
-   abstract protected function _write($level, $message, array $context = []);
+   abstract protected function _write($level, $message, $context = null);
 
 
 

@@ -124,7 +124,7 @@ class MySQL extends AbstractEnvoy implements EnvoyInterface {
     /**
      * @inheritdoc
      */
-    protected function _write($level, $message, array $context = []) {
+    protected function _write($level, $message, $context = null) {
 
 
         if($this->_table_name && $this->_is_connected()) {

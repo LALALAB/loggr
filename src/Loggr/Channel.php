@@ -47,7 +47,7 @@ class Channel extends AbstractHandler{
     /**
      * @inheritdoc
      */
-    final protected function _handle($level, $message, array $context = []){
+    final protected function _handle($level, $message, $context = null){
         foreach($this->_envoys as $Envoy){
             $Envoy->log($level, $message, $context);
         }

@@ -8,7 +8,7 @@ Class File extends AbstractEnvoy implements EnvoyInterface {
 
 
    protected $_files = [
-      'all'     => [ Level::DEBUG , Level::INFO ,      Level::NOTICE,   Level::WARNING ,  Level::ERROR ,   Level::CRITICAL ,  Level::ALERT ,  Level::EMERGENCY],
+      'all'     => [ Level::INFO ,      Level::NOTICE,   Level::WARNING ,  Level::ERROR ,   Level::CRITICAL ,  Level::ALERT ,  Level::EMERGENCY],
       'debug'   => [ Level::TIME ,  Level::MEMORY ,    Level::DEBUG],
       'error'   => [ Level::ERROR , Level::CRITICAL ,  Level::ALERT ,   Level::EMERGENCY],
       'perf'    => [ Level::TIME ,  Level::MEMORY],
@@ -80,9 +80,11 @@ Class File extends AbstractEnvoy implements EnvoyInterface {
    /**
     * @inheritdoc
     */
-   protected function _write($level, $message, array $context = []) {
+   protected function _write($level, $message, $context = null) {
+
 
       foreach ($this->_files as $file_name => $opt) {
+
 
 
          if ( in_array($level, $opt) ) {

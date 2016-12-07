@@ -41,7 +41,6 @@ class Message extends AbstractFormatter implements FormatterInterface{
      * @return mixed|null
      */
     public function format($level, $message, $context) {
-
         //First, interpolate the message with the context
         //Todo : merge the options to the context
         $message = $this->interpolate($message, $context);

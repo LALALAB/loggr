@@ -14,7 +14,7 @@ class Console extends AbstractEnvoy implements EnvoyInterface {
     /**
      * @inheritdoc
      */
-    protected function _write($level, $message, array $context = []) {
+    protected function _write($level, $message, $context = null) {
         if ($this->_in_a_console()) {
             echo $this->_Formatter->format_for_console( $this->_Formatter->format($level, $message, $context) ) . "";
         }

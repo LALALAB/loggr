@@ -69,7 +69,7 @@ class Loggr extends AbstractHandler{
      * @param array $context
      * @param array $channels
      */
-    protected function _handle($level, $message, array $context = [], array $channels = []){
+    protected function _handle($level, $message, $context = null, array $channels = []){
         $this->_notify($level, $message, $context, $channels);
     }
 

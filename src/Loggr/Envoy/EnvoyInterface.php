@@ -19,7 +19,7 @@ interface EnvoyInterface {
      *
      * @return null
      */
-    public function emergency($message, array $context = []);
+    public function emergency($message, $context = null);
 
 
     /**
@@ -33,7 +33,7 @@ interface EnvoyInterface {
      *
      * @return null
      */
-    public function alert($message, array $context = []);
+    public function alert($message, $context = null);
 
 
     /**
@@ -46,7 +46,7 @@ interface EnvoyInterface {
      *
      * @return null
      */
-    public function critical($message, array $context = []);
+    public function critical($message, $context = null);
 
 
     /**
@@ -58,7 +58,7 @@ interface EnvoyInterface {
      *
      * @return null
      */
-    public function error($message, array $context = []);
+    public function error($message, $context = null);
 
 
     /**
@@ -72,7 +72,7 @@ interface EnvoyInterface {
      *
      * @return null
      */
-    public function warning($message, array $context = []);
+    public function warning($message, $context = null);
 
 
     /**
@@ -83,7 +83,7 @@ interface EnvoyInterface {
      *
      * @return null
      */
-    public function notice($message, array $context = []);
+    public function notice($message, $context = null);
 
 
     /**
@@ -96,7 +96,7 @@ interface EnvoyInterface {
      *
      * @return null
      */
-    public function info($message, array $context = []);
+    public function info($message, $context = null);
 
 
     /**
@@ -107,7 +107,7 @@ interface EnvoyInterface {
      *
      * @return null
      */
-    public function debug($message, array $context = []);
+    public function debug($message, $context = null);
 
 
     /**
@@ -117,6 +117,6 @@ interface EnvoyInterface {
      * @param string $message
      * @param array  $context
      */
-    public function log($level, $message, array $context = []);
+    public function log($level, $message, $context = null);
     
 }

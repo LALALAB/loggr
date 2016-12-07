@@ -20,7 +20,7 @@ Usage
 ------------
 
 #### Direct logging : 
-````php
+```php
 //Create and configure a file loggr
 $Fl = new \Loggr\Envoy\File();
 $Fl->set_path('./tmp/logs/');
@@ -33,7 +33,7 @@ $Fl->log(\Loggr\Level::INFO, 'Hi', ['con'=>'text']);
 
 //or you can use the shortcut methods to avoid passing the level
 $Fl->info('Hi', ['con'=>'text']);
-````
+```
 
 #### Unsing the static class : 
 

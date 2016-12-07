@@ -36,7 +36,7 @@ abstract class AbstractHandler {
      *
      * @param $name
      */
-    public function __construct($name){
+    public function __construct($name = ''){
         $this->_name = $name;
     }
 
@@ -44,7 +44,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final public function debug($message, array $context  = []){
+    final public function debug($message, $context = null){
         call_user_func_array([$this, '_handle'], array_merge([Level::DEBUG], func_get_args()));
     }
 
@@ -52,7 +52,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final  public function info($message, array $context  = []){
+    final  public function info($message, $context = null){
         call_user_func_array([$this, '_handle'], array_merge([Level::INFO], func_get_args()));
 
     }
@@ -61,7 +61,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final public function notice($message, array $context  = []){
+    final public function notice($message, $context = null){
         call_user_func_array([$this, '_handle'], array_merge([Level::NOTICE], func_get_args()));
     }
 
@@ -69,7 +69,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final public function warning($message, array $context  = []){
+    final public function warning($message, $context = null){
         call_user_func_array([$this, '_handle'], array_merge([Level::WARNING], func_get_args()));
     }
 
@@ -77,7 +77,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final public function error($message, array $context  = []){
+    final public function error($message, $context = null){
         call_user_func_array([$this, '_handle'], array_merge([Level::ERROR], func_get_args()));
     }
 
@@ -85,7 +85,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final public function critical($message, array $context  = []){
+    final public function critical($message, $context = null){
         call_user_func_array([$this, '_handle'], array_merge([Level::CRITICAL], func_get_args()));
     }
 
@@ -93,7 +93,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final public function alert($message, array $context  = []){
+    final public function alert($message, $context = null){
         call_user_func_array([$this, '_handle'], array_merge([Level::ALERT], func_get_args()));
     }
 
@@ -101,7 +101,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final public function emergency($message, array $context = []){
+    final public function emergency($message, $context = null){
         call_user_func_array([$this, '_handle'], array_merge([Level::EMERGENCY], func_get_args()));
     }
 
@@ -109,7 +109,7 @@ abstract class AbstractHandler {
     /**
      * @inheritdoc
      */
-    final public function log($level, $message, array $context = []){
+    final public function log($level, $message, $context = null){
         call_user_func_array([$this, '_handle'], func_get_args());
     }
 
@@ -120,7 +120,7 @@ abstract class AbstractHandler {
      * @param array $context
      * @param array $channels
      */
-    abstract protected function _handle($level, $message, array $context = []);
+    abstract protected function _handle($level, $message, $context = null);
 
 
 }
