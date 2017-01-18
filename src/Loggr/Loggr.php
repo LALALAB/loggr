@@ -57,6 +57,9 @@ class Loggr extends AbstractHandler{
     public function add_envoy(Envoy\EnvoyInterface $Envoy, $channel = 'implicit'){
         if( !isset($this->_channels[$channel]) ){
             $this->_channels[$channel] = new Channel($channel);
+            if ($channel !== 'implicit') {
+                $this->_channels[$channel]->set_explicit();
+            }
         }
 
         $this->_channels[$channel]->add($Envoy);
