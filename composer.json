@@ -1,6 +1,10 @@
 {
   "name": "lalalab/loggr",
   "version": "2.1.4",
+  "dist": {
+     "url": "https://github.com/LALALAB/loggr/archive/master.zip",
+     "type": "zip"
+  }
   "description": "PHP Logger, PSR-3, what else ?",
   "keywords": ["php", "log", "PSR-3"],
   "license": "MIT",
